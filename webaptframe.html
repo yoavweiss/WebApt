@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+    <script>
+(function(){
+    // TODO: Currently this stuff is async. Should make it maintain call order
+    var packages = {
+        "jquery_2.0.3":"http://code.jquery.com/jquery-2.0.3.min.js"
+    };
+    var loadInterval;
+    var sendScriptCode = function(code){
+        parent.postMessage(["code", code], "*");
+    };
+    var getScriptUrls = function(e){
+        var scriptUrls = e.data;
+        clearInterval(loadInterval);
+        scriptUrls.forEach(function(dataset){
+            var url = dataset[0]
+            ,   package = dataset[1] + "_" + dataset[2];
+            var code = localStorage.apt[package];
+            if(code){
+                // We haz da codez!!!
+                sendScriptCode(code);
+            }
+            else{
+                // Start loading if it's not already here
+                downloadScript(url, package, sendScriptCode);
+            }
+        });
+    };
+    var gotScript = function(code, url, package, callback) {
+        localStorage.apt[package] = code;
+        callback(code);
+    }
+    var downloadScript = function(url, package, callback){
+        var xhr = new XMLHttpRequest()
+        ,   packageUrl = packages[package]
+        ,   sendurl;
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState == 4){
+                gotScript(xhr.responseText, url, package, callback);
+            }
+        }
+        sendurl = packageUrl || url;
+        xhr.open("GET", sendurl, true);
+        xhr.send();
+    };
+    if(!localStorage.apt){
+        localStorage.apt = {};
+    }
+    window.addEventListener('message', getScriptUrls, false);
+    // Polling the mainthread every 50 ms until we get the first sign of life from it
+    loadInterval = setInterval(function(){parent.postMessage(["load"], "*")},
+                       50);
+   // Get the package name and version from script
+  // Check if we have them in local storage
+ // If we don't, fetch them and put them there
+// Give the code to the calling script
+})();
+    </script>
+    </body>
+</html>
+

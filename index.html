@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        Test for the WebApt script
+        <script data-src="http://code.jquery.com/jquery-2.0.3.min.js" data-package="jquery" data-version="2.0.3" minified></script>
+        <iframe src="webaptframe.html" style="display: hidden" id="aptframe" ></iframe>
+        <script src="webapt.js"></script>
+        <script onerror="alert('Y NO jquery');">
+            var bla = $('script');
+            console.log(bla);
+        </script>
+        
+    </body>
+</html>
+
